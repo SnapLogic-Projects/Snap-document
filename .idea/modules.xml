@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/DocumentImpl/DocumentImpl.iml" filepath="$PROJECT_DIR$/DocumentImpl/DocumentImpl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FlinkImpl/FlinkImpl.iml" filepath="$PROJECT_DIR$/FlinkImpl/FlinkImpl.iml" />
       <module fileurl="file://$PROJECT_DIR$/SnapFlank.iml" filepath="$PROJECT_DIR$/SnapFlank.iml" />
     </modules>
   </component>
