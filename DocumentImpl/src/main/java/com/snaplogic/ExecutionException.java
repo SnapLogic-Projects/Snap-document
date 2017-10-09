@@ -1,3 +1,5 @@
+package com.snaplogic;
+
 /**
  * This exception should be used by the snap author to notify the platform about any exception that
  * happens during the snap execution.

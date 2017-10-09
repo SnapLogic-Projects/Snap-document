@@ -1,3 +1,5 @@
+package com.snaplogic;
+
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import com.fasterxml.uuid.impl.UUIDUtil;
@@ -99,8 +101,8 @@ public class MetadataImpl implements Metadata {
      * Adds the metadata entry under the specified namespace.
      *
      * @param namespace Namespace
-     * @param key       Metadata key
-     * @param value     Metadata value
+     * @param key       com.snaplogic.Metadata key
+     * @param value     com.snaplogic.Metadata value
      */
     public void add(String namespace, String key, String value) {
         addMetadata(namespace, key, value);
@@ -398,7 +400,7 @@ public class MetadataImpl implements Metadata {
         @Override
         public String toString() {
             return Objects.toStringHelper(this).
-                    add("Metadata", metadata).
+                    add("com.snaplogic.Metadata", metadata).
                     toString();
         }
     }

@@ -1,3 +1,5 @@
+package com.snaplogic;
+
 import com.google.common.base.Throwables;
 import org.apache.commons.lang3.StringUtils;
 

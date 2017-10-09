@@ -1,3 +1,5 @@
+package com.snaplogic;
+
 import java.io.Externalizable;
 
 /**
@@ -22,7 +24,7 @@ public interface Metadata extends Externalizable {
      * Returns the value for the given key defined under the specified namespace.
      *
      * @param namespaceRegex Namespace regex pattern
-     * @param key            Metadata key
+     * @param key            com.snaplogic.Metadata key
      * @return value
      */
     String lookup(String namespaceRegex, String key);

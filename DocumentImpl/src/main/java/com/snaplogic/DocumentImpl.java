@@ -1,3 +1,5 @@
+package com.snaplogic;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Objects;
@@ -20,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * This class represents a document that provides access to the data as well as the metadata.
  *
- * <p>Snap Authors operate on the Documents inside the snap. A Document consists of a data and a
+ * <p>Snap Authors operate on the Documents inside the snap. A com.snaplogic.Document consists of a data and a
  * metadata section. Each snap can add metadata entries under its own namespace but can read the
  * metadata entries from any namespace.
  *
@@ -52,7 +54,7 @@ public class DocumentImpl implements Document {
     }
 
     private static final String MD_5 = "MD5";
-    private static final String METADATA = "Metadata->";
+    private static final String METADATA = "com.snaplogic.Metadata->";
     private static final String DATA = "Data->";
     private static final String NEW_LINE = "\n";
 

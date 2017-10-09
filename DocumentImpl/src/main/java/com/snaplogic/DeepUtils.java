@@ -1,3 +1,5 @@
+package com.snaplogic;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;

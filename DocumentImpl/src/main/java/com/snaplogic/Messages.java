@@ -1,3 +1,5 @@
+package com.snaplogic;
+
 /**
  * Messages is the container for all the externalizable messages in this package.
  *

@@ -1,3 +1,5 @@
+package com.snaplogic;
+
 /**
  * This exception should be used when there is a problem during document creation or manipulation.
  *

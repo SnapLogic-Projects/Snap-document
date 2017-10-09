@@ -1,3 +1,5 @@
+package com.snaplogic;
+
 /**
  * This class holds all the constants used in the sdk.
  *

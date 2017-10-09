@@ -1,4 +1,6 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snaplogic.Document;
+import com.snaplogic.DocumentImpl;
 import org.junit.Assert;
 import org.junit.Test;
 

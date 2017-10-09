@@ -1,3 +1,5 @@
+package com.snaplogic;
+
 import java.io.Externalizable;
 
 public interface Document extends Externalizable {
@@ -5,7 +7,7 @@ public interface Document extends Externalizable {
     /**
      * Sets the data.
      *
-     * @param data Document data
+     * @param data com.snaplogic.Document data
      */
     void set(Object data);
 

@@ -1,8 +1,10 @@
+package com.snaplogic;
+
 import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * LineageEntry represents an entry in the lineage chain with reference to the parent entries and
+ * com.snaplogic.LineageEntry represents an entry in the lineage chain with reference to the parent entries and
  * child entries.
  *
  * @author ksubramanian
