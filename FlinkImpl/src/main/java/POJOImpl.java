@@ -1,8 +1,8 @@
+import apple.laf.JRSUIUtils;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.operators.Order;
@@ -11,14 +11,10 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.io.TextOutputFormat;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.snaplogic.Document;
 import com.snaplogic.DocumentImpl;
-import org.apache.flink.api.java.operators.DataSource;
 
 import static org.apache.flink.core.fs.FileSystem.WriteMode.OVERWRITE;
 
@@ -113,18 +109,21 @@ public class POJOImpl {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        // jackson csv example
-        CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader();
-        ObjectMapper mapper = new CsvMapper();
+        // csv reader
+        CsvMapper mapper = new CsvMapper();
+        CsvSchema schema = CsvSchema.emptySchema().withHeader();
         File csvFile = new File("directory.csv");
-        MappingIterator<Record> iterator = mapper.readerFor(Record.class).with(bootstrapSchema)
+
+        MappingIterator<Map<String, Object>> iterator = mapper.readerFor(Map.class)
+                .with(schema)
                 .readValues(csvFile);
 
         ArrayList<Document> list = new ArrayList<Document>();
+
         while (iterator.hasNext()) {
-            Record row = iterator.next();
-            Document cur = new DocumentImpl(row);
-            DataSet<Record> input = env.fromElements(Record.class, ((Record)cur.get()));
+            Map<String, Object> map = iterator.next();
+            System.out.println(map.get("deptID"));
+            Document cur = new DocumentImpl(map);
             list.add(cur);
         }
 
@@ -134,7 +133,18 @@ public class POJOImpl {
         DataSet<Record> trans = csvInput.map(new MapFunction<Document, Record>() {
             @Override
             public Record map(Document document) throws Exception {
-                return (Record) document.get();
+
+                Map<String, Object> map = (Map<String, Object>) document.get();
+                Record record = new Record();
+                record.setName((String) map.get("name"));
+                record.setLocation((String) map.get("location"));
+                record.setExtension(Integer.valueOf((String) map.get("extension")));
+                record.setEmail((String) map.get("email"));
+                record.setTitle((String) map.get("title"));
+                record.setDepartment((String) map.get("department"));
+                record.setDeptID(Integer.valueOf((String) map.get("deptID")));
+
+                return record;
             }
         });
 
@@ -171,6 +181,5 @@ public class POJOImpl {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }
