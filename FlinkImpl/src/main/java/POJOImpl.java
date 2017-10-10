@@ -1,13 +1,11 @@
-import apple.laf.JRSUIUtils;
 import com.fasterxml.jackson.databind.MappingIterator;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.apache.flink.api.common.functions.FilterFunction;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.io.TextOutputFormat;
 
 import java.io.*;
@@ -24,87 +22,6 @@ public class POJOImpl {
      * This is the POJO (Plain Old Java Object) that is being used for all the operations.
      * As long as all fields are public or have a getter/setter, the system can handle them.
      */
-    public static class Record implements Serializable {
-        //fields: Name,Location,Extension,Email,Title,Department,Dept ID
-        private String name;
-        private String location;
-        private int extension;
-        private String email;
-        private String title;
-        private String department;
-        private int deptID;
-
-        public Record() {
-
-        }
-
-        public Record(String name, String location, int extension, String email, String title,
-                      String department, int deptID) {
-            this.name = name;
-            this.location = location;
-            this.extension = extension;
-            this.email = email;
-            this.title = title;
-            this.department = department;
-            this.deptID = deptID;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getLocation() {
-            return location;
-        }
-
-        public int getExtension() {
-            return extension;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getDepartment() {
-            return department;
-        }
-
-        public int getDeptID() {
-            return deptID;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public void setLocation(String location) {
-            this.location = location;
-        }
-
-        public void setExtension(int extension) {
-            this.extension = extension;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public void setDepartment(String department) {
-            this.department = department;
-        }
-
-        public void setDeptID(int deptID) {
-            this.deptID = deptID;
-        }
-    }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -130,51 +47,36 @@ public class POJOImpl {
         // flink do his job.
         DataSet<Document> csvInput = env.fromCollection(list);
 
-        DataSet<Record> trans = csvInput.map(new MapFunction<Document, Record>() {
+        DataSet<Document> output0 = csvInput.filter(new FilterFunction<Document>() {
             @Override
-            public Record map(Document document) throws Exception {
-
-                Map<String, Object> map = (Map<String, Object>) document.get();
-                Record record = new Record();
-                record.setName((String) map.get("name"));
-                record.setLocation((String) map.get("location"));
-                record.setExtension(Integer.valueOf((String) map.get("extension")));
-                record.setEmail((String) map.get("email"));
-                record.setTitle((String) map.get("title"));
-                record.setDepartment((String) map.get("department"));
-                record.setDeptID(Integer.valueOf((String) map.get("deptID")));
-
-                return record;
+            public boolean filter(Document document) throws Exception {
+                return ((Map<String, Object>)document.get()).get("department").equals("Sales") && ((Map<String, Object>)document.get()).get("location").equals("Field");
             }
         });
 
-        DataSet<Record> output0 = trans.filter(new FilterFunction<Record>() {
+        output0.sortPartition(new KeySelector<Document, String>() {
             @Override
-            public boolean filter(Record record) throws Exception {
-                return record.department.equals("Sales") && record.location.equals("Field");
+            public String getKey(Document document) throws Exception {
+                return (String) ((Map<String, Object>)document.get()).get("name");
             }
-        })
-                .sortPartition("name", Order.ASCENDING)
-                .partitionByRange("name");
+        }, Order.DESCENDING);
 
 
-
-        //Write elements line-wise as Strings.
-        // The Strings are obtained by calling a user-defined format() method for each element.
-        output0.writeAsFormattedText("pojo0.csv", OVERWRITE,
-                new TextOutputFormat.TextFormatter<Record>() {
+        output0.writeAsFormattedText("pojomap0.csv", OVERWRITE,
+                new TextOutputFormat.TextFormatter<Document>() {
                     @Override
-                    public String format(Record record) {
-                        return record.name + "|"
-                                + record.location + "|"
-                                + record.extension + "|"
-                                + record.email + "|"
-                                + record.title + "|"
-                                + record.department + "|"
-                                + record.deptID + "|";
+                    public String format(Document document) {
+                        Map<String, Object> record = (Map<String, Object>)document.get();
+                        return record.get("name") + "|"
+                                + record.get("location") + "|"
+                                + record.get("extension") + "|"
+                                + record.get("email") + "|"
+                                + record.get("title") + "|"
+                                + record.get("department") + "|"
+                                + record.get("deptID") + "|";
                     }
-                }).setParallelism(1);
-
+                }
+        ).setParallelism(1);
 
         try {
             env.execute();
