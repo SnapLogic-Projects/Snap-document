@@ -21,8 +21,10 @@
         </plugins>
     </build>
     <modules>
-        <module>com.snaplogic.DocumentImpl</module>
+        <module>DocumentImpl</module>
         <module>FlinkImpl</module>
+        <module>ExpressionImpl</module>
+        <module>ExpressionImplDependcies</module>
     </modules>
 
     <dependencies>
