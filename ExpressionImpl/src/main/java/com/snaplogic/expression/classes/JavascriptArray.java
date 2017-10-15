@@ -1,6 +1,7 @@
 package com.snaplogic.expression.classes;
 
-import com.snaplogic.api.common.expressions.ScopeStack;
+
+import com.snaplogic.common.expressions.ScopeStack;
 
 import java.util.List;
 

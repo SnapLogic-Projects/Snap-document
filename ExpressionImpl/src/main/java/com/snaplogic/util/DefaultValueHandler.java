@@ -2,9 +2,11 @@ package com.snaplogic.util;
 
 import com.google.inject.Singleton;
 import com.snaplogic.Document;
-import com.snaplogic.api.common.expressions.DataValueHandler;
-import com.snaplogic.api.common.expressions.Scope;
-import com.snaplogic.api.common.services.SnapExpressionService;
+import com.snaplogic.api.ExecutionException;
+import com.snaplogic.common.expressions.DataValueHandler;
+import com.snaplogic.common.expressions.Scope;
+import com.snaplogic.common.services.SnapExpressionService;
+import com.snaplogic.snap.api.SnapDataException;
 
 import java.io.Serializable;
 import java.util.Stack;

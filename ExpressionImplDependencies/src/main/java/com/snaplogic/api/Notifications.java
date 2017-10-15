@@ -32,7 +32,7 @@ public class Notifications {
     private static void registerInternal(Class cl) {
         for (Field field : cl.getDeclaredFields()) {
             try {
-                Notification note = field.getAnnotation(Notification.class);
+                com.snaplogic.api.Notification note = field.getAnnotation(Notification.class);
                 if (note == null) {
                     continue;
                 }

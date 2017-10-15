@@ -1,5 +1,7 @@
 package com.snaplogic.jsonpath;
 
+import com.snaplogic.common.jsonpath.InvalidPathException;
+
 /**
  * Exception thrown if there was a problem parsing a JSON-Path.
  *

@@ -1,8 +1,8 @@
 package com.snaplogic.common.expressions;
 
 import com.snaplogic.Document;
-import com.snaplogic.api.SnapDataException;
 import com.snaplogic.common.services.SnapExpressionService;
+import com.snaplogic.snap.api.SnapDataException;
 
 import javax.annotation.Nullable;
 import java.util.Stack;

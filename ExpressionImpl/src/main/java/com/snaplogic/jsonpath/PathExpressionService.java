@@ -1,5 +1,7 @@
 package com.snaplogic.jsonpath;
 
+import com.snaplogic.common.jsonpath.InvalidPathException;
+
 /**
  * Interface for services that can compile and evaluate expressions found in JSON-Paths.
  *

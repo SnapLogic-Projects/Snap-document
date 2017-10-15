@@ -1,8 +1,7 @@
 package com.snaplogic.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.snaplogic.LintLevel;
-import com.snaplogic.LintReporter;
+import com.snaplogic.common.services.LintReporter;
 
 /**
  * A lint defines a non-fatal issue that the user should be notified of.  To define a Lint, a

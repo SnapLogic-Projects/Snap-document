@@ -1,15 +1,31 @@
+/*
+ * SnapLogic - Data Integration
+ *
+ * Copyright (C) 2014, SnapLogic, Inc.  All rights reserved.
+ *
+ * This program is licensed under the terms of
+ * the SnapLogic Commercial Subscription agreement.
+ *
+ * "SnapLogic" is a trademark of SnapLogic, Inc.
+ */
 package com.snaplogic.expression;
 
 import com.google.common.collect.ImmutableSet;
-import com.snaplogic.api.common.expressions.Scope;
-import com.snaplogic.api.common.expressions.ScopeStack;
-import com.snaplogic.api.common.jsonpath.InvalidPathException;
-import com.snaplogic.api.common.jsonpath.PathExpressionService;
+import com.snaplogic.common.expressions.Scope;
+import com.snaplogic.common.expressions.ScopeStack;
+import com.snaplogic.common.jsonpath.InvalidPathException;
+import com.snaplogic.expression.util.LiteralUtils;
+import com.snaplogic.jsonpath.CompiledExpressionHolder;
+import com.snaplogic.jsonpath.InvalidPathSyntaxException;
+import com.snaplogic.jsonpath.PathExpressionService;
+import com.snaplogic.jsonpath.tokens.NameToken;
 import com.snaplogic.util.DefaultValueHandler;
 
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
+
+import static com.snaplogic.expression.Messages.PLEASE_CHECK_YOUR_EXPRESSION;
 
 /**
  * A JSON-Path expression service that uses the SnapLogic expression language.
@@ -108,4 +124,3 @@ public class JsonPathExpressionService implements PathExpressionService {
         return compatScopes;
     }
 }
-

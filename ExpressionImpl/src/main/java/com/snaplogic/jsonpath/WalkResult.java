@@ -1,5 +1,6 @@
 package com.snaplogic.jsonpath;
 
+import com.snaplogic.common.jsonpath.JsonPath;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;

@@ -1,7 +1,10 @@
 package com.snaplogic.jsonpath.tokens;
 
 
-import com.snaplogic.jsonpath.InvalidPathException;
+import com.snaplogic.common.jsonpath.InvalidPathException;
+import com.snaplogic.jsonpath.PathVisitor;
+import com.snaplogic.jsonpath.PathWalker;
+import com.snaplogic.jsonpath.UnsupportedPathException;
 
 /**
  * Container for a plain name in a JSON-Path.

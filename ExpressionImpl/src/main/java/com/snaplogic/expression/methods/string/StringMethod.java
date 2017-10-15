@@ -2,11 +2,22 @@ package com.snaplogic.expression.methods.string;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.snaplogic.api.ExecutionException;
+import com.snaplogic.expression.methods.Method;
+import com.snaplogic.expression.methods.UnknownMethodException;
+import com.snaplogic.expression.methods.object.ObjectMethod;
+import com.snaplogic.expression.util.ScriptEngineProvider;
+import com.snaplogic.snap.api.SnapDataException;
 
 import javax.script.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import static com.snaplogic.expression.methods.string.Messages.EVALUATE_EXPRESSION_FAILED;
+import static com.snaplogic.expression.methods.string.Messages.PLEASE_CHECK_YOUR_EXPRESSION_SYNTAX;
+import static com.snaplogic.expression.methods.string.Messages.UNABLE_TO_COMPILE_JS_EXPRESSION;
+import static com.snaplogic.expression.methods.string.Messages.UNEXPECTED_JAVA_SCRIPT_ENGINE_RESULT;
 
 /**
  * Wrapper class for string functions in the expression language.

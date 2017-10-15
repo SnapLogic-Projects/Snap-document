@@ -5,6 +5,7 @@ import com.snaplogic.api.Notification;
 import com.snaplogic.api.Notifications;
 import com.snaplogic.expression.ObjectType;
 import com.snaplogic.expression.methods.Method;
+import com.snaplogic.util.JsonPathUtil;
 
 import java.util.List;
 import java.util.Map;

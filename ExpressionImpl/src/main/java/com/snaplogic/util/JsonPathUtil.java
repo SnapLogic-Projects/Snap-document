@@ -1,17 +1,36 @@
+/*
+ * SnapLogic - Data Integration
+ *
+ * Copyright (C) 2014, SnapLogic, Inc.  All rights reserved.
+ *
+ * This program is licensed under the terms of
+ * the SnapLogic Commercial Subscription agreement.
+ *
+ * "SnapLogic" is a trademark of SnapLogic, Inc.
+ */
 package com.snaplogic.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Singleton;
+import com.snaplogic.api.ExecutionException;
 import com.snaplogic.api.SnapException;
+import com.snaplogic.common.jsonpath.InvalidPathException;
+import com.snaplogic.common.jsonpath.JsonPath;
+import com.snaplogic.jsonpath.JsonPathImpl;
 
-import javax.annotation.CheckForNull;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static com.snaplogic.util.Messages.*;
+import javax.annotation.CheckForNull;
+
+import static com.snaplogic.util.Messages.INVALID_COLLECTION_OBJECT;
+import static com.snaplogic.util.Messages.NO_COLLECTION_OBJECT;
+import static com.snaplogic.util.Messages.NO_JSON_PATH;
+import static com.snaplogic.util.Messages.UNDEFINED_SOURCE_MAP;
+import static com.snaplogic.util.Messages.UNDEFINED_TARGET_MAP;
 
 /**
  * JsonPathUtil

@@ -24,7 +24,7 @@
         <module>DocumentImpl</module>
         <module>FlinkImpl</module>
         <module>ExpressionImpl</module>
-        <module>ExpressionImplDependcies</module>
+        <module>ExpressionImplDependencies</module>
     </modules>
 
     <dependencies>

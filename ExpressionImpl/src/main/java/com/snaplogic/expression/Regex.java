@@ -1,15 +1,27 @@
+/*
+ * SnapLogic - Data Integration
+ *
+ * Copyright (C) 2013, SnapLogic, Inc.  All rights reserved.
+ *
+ * This program is licensed under the terms of
+ * the SnapLogic Commercial Subscription agreement.
+ *
+ * "SnapLogic" is a trademark of SnapLogic, Inc.
+ */
+
 package com.snaplogic.expression;
 
 import com.google.common.collect.ImmutableSet;
 import com.snaplogic.api.FeatureFlag;
-import com.snaplogic.api.common.expressions.Scope;
+import com.snaplogic.common.expressions.Scope;
 import com.snaplogic.expression.methods.JavascriptFunction;
+import com.snaplogic.expression.methods.Method;
+import com.snaplogic.expression.methods.UnknownMethodException;
+import com.snaplogic.expression.methods.string.StringMethod;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.Bindings;
-import javax.script.CompiledScript;
-import javax.script.SimpleBindings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +29,10 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import javax.script.Bindings;
+import javax.script.CompiledScript;
+import javax.script.SimpleBindings;
 
 /**
  * Wraps a javascript regex.
@@ -383,4 +399,3 @@ public class Regex {
         throw new UnknownMethodException(noMethod);
     }
 }
-

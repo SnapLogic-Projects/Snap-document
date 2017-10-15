@@ -1,12 +1,38 @@
+/*
+ * SnapLogic - Data Integration
+ *
+ * Copyright (C) 2013, SnapLogic, Inc.  All rights reserved.
+ *
+ * This program is licensed under the terms of
+ * the SnapLogic Commercial Subscription agreement.
+ *
+ * "SnapLogic" is a trademark of SnapLogic, Inc.
+ */
+
 package com.snaplogic.jsonpath;
 
-import com.snaplogic.api.common.jsonpath.JsonPath;
-import com.snaplogic.api.common.jsonpath.PathExpressionService;
+import com.snaplogic.api.SnapException;
+import com.snaplogic.common.jsonpath.InvalidPathException;
+import com.snaplogic.common.jsonpath.JsonPath;
+import com.snaplogic.common.jsonpath.WalkResult;
+import com.snaplogic.expression.JsonPathExpressionService;
+import com.snaplogic.jsonpath.tokens.NameToken;
+import com.snaplogic.jsonpath.tokens.PathToken;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static com.snaplogic.jsonpath.Messages.READ_STATIC_PATH_FAILED;
+import static com.snaplogic.jsonpath.Messages.STATICALLY_DEFINED_JSON_PATH_IS_INVALID;
+import static com.snaplogic.jsonpath.Messages.UNABLE_TO_WRITE_DATA_TO_A_STATICALLY_DEFINED_PATH;
 
 /**
  * A convenience class for performing operations using a JSON-Path.
@@ -512,4 +538,3 @@ public class JsonPathImpl implements JsonPath {
         }
     }
 }
-

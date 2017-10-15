@@ -13,16 +13,22 @@ package com.snaplogic.expression.classes;
 
 import com.google.common.collect.ImmutableMap;
 
-import com.snaplogic.api.common.expressions.Scope;
+import com.snaplogic.api.ExecutionException;
 import com.snaplogic.api.FeatureFlag;
-import com.snaplogic.api.common.expressions.ScopeStack;
+import com.snaplogic.common.expressions.Scope;
+import com.snaplogic.common.expressions.ScopeStack;
+import com.snaplogic.expression.ObjectType;
 import com.snaplogic.expression.methods.JavascriptFunction;
+import com.snaplogic.snap.api.SnapDataException;
+import org.apache.commons.lang3.time.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.IllegalFieldValueException;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sl.EvaluatorUtils;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -34,6 +40,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.snaplogic.expression.classes.Messages.BAD_FORMAT_RESOLUTION;
+import static com.snaplogic.expression.classes.Messages.BAD_FORMAT_TYPE_RESOLUTION;
+import static com.snaplogic.expression.classes.Messages.EXPECTING_A_STRING_FOR_DATE_FORMAT;
+import static com.snaplogic.expression.classes.Messages.FIELD_PARAMETER_INVALID;
+import static com.snaplogic.expression.classes.Messages.PLEASE_CHECK_YOUR_EXPRESSION_SYNTAX;
+import static com.snaplogic.expression.classes.Messages.THE_DATE_FORMAT_STRING_IS_INVALID;
 import static com.snaplogic.expression.classes.Messages.UNABLE_TO_PARSE_DATE;
 
 /**

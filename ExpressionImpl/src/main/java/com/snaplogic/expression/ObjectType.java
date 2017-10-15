@@ -1,8 +1,25 @@
+/*
+ * SnapLogic - Data Integration
+ *
+ * Copyright (C) 2013, SnapLogic, Inc.  All rights reserved.
+ *
+ * This program is licensed under the terms of
+ * the SnapLogic Commercial Subscription agreement.
+ *
+ * "SnapLogic" is a trademark of SnapLogic, Inc.
+ */
+
 package com.snaplogic.expression;
 
 import com.google.common.collect.ImmutableMap;
+import com.snaplogic.api.ExecutionException;
+import com.snaplogic.common.SnapType;
 import com.snaplogic.expression.classes.JavascriptClass;
 import com.snaplogic.expression.methods.JavascriptFunction;
+import com.snaplogic.snap.api.SnapDataException;
+
+import org.apache.commons.collections.list.AbstractListDecorator;
+import org.apache.commons.collections.map.AbstractMapDecorator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -13,7 +30,19 @@ import org.joda.time.LocalTime;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.snaplogic.expression.Messages.CANNOT_COMPARE_VALUE_TO_NUMBER;
+import static com.snaplogic.expression.Messages.COPY_ARRAY_RESOLUTION;
+import static com.snaplogic.expression.Messages.COPY_OBJ_RESOLUTION;
+import static com.snaplogic.expression.Messages.GLOBAL_ARRAY_CANNOT_BE_CHANGED;
+import static com.snaplogic.expression.Messages.GLOBAL_OBJ_CANNOT_BE_CHANGED;
+import static com.snaplogic.expression.Messages.PLEASE_CHECK_YOUR_EXPRESSION;
 
 /**
  * Enum for object return type in expression language.
