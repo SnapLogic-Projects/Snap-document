@@ -23,11 +23,6 @@
         </plugins>
     </build>
 
-    <modules>
-        <module>../DocumentImpl</module>
-        <module>../ExpressionImplDependencies</module>
-    </modules>
-
     <dependencies>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
@@ -42,7 +37,7 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
-            <version>4.6</version>
+            <version>4.7</version>
         </dependency>
         <dependency>
             <groupId>com.snaplogic</groupId>
@@ -84,7 +79,7 @@
         </dependency>
         <dependency>
             <groupId>com.snaplogic</groupId>
-            <artifactId>ExpressionImplDependcies</artifactId>
+            <artifactId>ExpressionImplDependencies</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

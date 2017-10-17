@@ -181,7 +181,7 @@ public class SnapExpressionsLexer extends Lexer {
 	@Override
 	public String getSerializedATN() { return _serializedATN; }
 
-	@Override
+	//@Override
 	public String[] getChannelNames() { return channelNames; }
 
 	@Override

@@ -13,6 +13,7 @@ package com.snaplogic.expression;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Provider;
+import com.snaplogic.Document;
 import com.snaplogic.api.ExecutionException;
 import com.snaplogic.common.expressions.DataValueHandler;
 import com.snaplogic.common.expressions.Scope;
@@ -23,7 +24,6 @@ import com.snaplogic.expression.methods.TypedMethod;
 import com.snaplogic.expression.util.JaninoUtils;
 import com.snaplogic.expression.util.LiteralUtils;
 import com.snaplogic.grammars.SnapExpressionsParser;
-import com.snaplogic.snap.api.Document;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
