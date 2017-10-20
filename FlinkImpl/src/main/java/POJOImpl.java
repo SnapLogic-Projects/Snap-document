@@ -31,7 +31,7 @@ public class POJOImpl {
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
         File csvFile = new File("directory.csv");
 
-        MappingIterator<Map<String, Object>> iterator = mapper.readerFor(Map.class)
+        MappingIterator<Map<String, Object>> iterator = mapper.reader(Map.class)
                 .with(schema)
                 .readValues(csvFile);
 
