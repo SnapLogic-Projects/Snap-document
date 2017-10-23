@@ -1,6 +1,5 @@
-package com.snaplogic.expression;
-
 import com.snaplogic.common.expressions.ScopeStack;
+import com.snaplogic.expression.*;
 import com.snaplogic.grammars.SnapExpressionsLexer;
 import com.snaplogic.grammars.SnapExpressionsParser;
 import com.snaplogic.snap.api.SnapDataException;
@@ -17,36 +16,17 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
 
-/**
- * You can type in any snaplogic expression language to test the expression language functionality
- * We have a json data and a env parameter in this class
- * Json data:
- * {
- *     "firstName":"Dean",
- *     "age":26,
- *     "title":"student"
- * }
- * You can access jason data by using $, such as $firstName, $age, $title
- * For more details, please go to https://docs-snaplogic.atlassian.net/wiki/spaces/SD/pages/1438170/JSONPath
- * Env parameter:
- *
- * foo=bar
- * param='FIRST_NAME' = $firstName
- *
- * You can access env parameter by using _, such as _foo, _param
- * For more details, please go to https://docs-snaplogic.atlassian.net/wiki/spaces/SD/pages/1438163/Parameters+and+Fields
- */
-public class ExpressionConsole {
+
+public class ExpressionEnv {
 
     private HashMap<String, Object> jsonData;
     private HashMap<String, Object> envParam;
 
-    public ExpressionConsole(){
+    public ExpressionEnv(){
         jsonData = new HashMap<String, Object>() {{
             put("firstName", "Dean");
             put("age", new BigInteger("26"));
@@ -59,15 +39,24 @@ public class ExpressionConsole {
         }};
     }
 
-    public static void main(String[] args) {
-        ExpressionConsole console = new ExpressionConsole();
-        Scanner scanner = new Scanner(System.in);
-        String line = "";
-        while(true){
-            line = scanner.nextLine();
-            if(line.equals("exit") || line.equals("q")) return;
-            System.out.println(console.eval(String.format("eval(%s)",line),console.jsonData,console.envParam).toString());
+    public ExpressionEnv(Map<String, Object> jsonData) {
+        this.jsonData = new HashMap<String, Object>(jsonData);
+        this.envParam = new HashMap<String, Object>();
+    }
+
+
+//    public String exec() {
+//        ExpressionConsole console = new ExpressionConsole();
+//        return console.eval(String.format("eval(%s)",cmd),console.jsonData,console.envParam).toString();
+//    }
+
+    public <T> T eval(String inputStr) {
+        ScopeStack scopesStack = new ScopeStack();
+        scopesStack.push(new GlobalScope());
+        if (envParam != null) {
+            scopesStack.push(new EnvironmentScope(envParam));
         }
+        return eval(inputStr, jsonData, scopesStack);
     }
 
     public <T> T eval(String inputStr, Object data, Map<String, Object> envData) {
@@ -93,7 +82,7 @@ public class ExpressionConsole {
                     validNumber = true;
                 }
                 if (retval instanceof Double) {
-                    double dval = (double) retval;
+                    double dval = (Double) retval;
                     if (Double.isInfinite(dval) || Double.isNaN(dval)) {
                         validNumber = true;
                     }
