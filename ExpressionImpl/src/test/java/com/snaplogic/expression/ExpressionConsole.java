@@ -65,11 +65,10 @@ public class ExpressionConsole {
         String line = "";
         while(true){
             line = scanner.nextLine();
-            if(line!="exit" && line!="q") return;
+            if(line=="exit" || line=="q") return;
             System.out.println(console.eval(String.format("eval(%s)",line),console.jsonData,console.envParam).toString());
         }
     }
-
 
     public <T> T eval(String inputStr, Object data, Map<String, Object> envData) {
         ScopeStack scopeStack = new ScopeStack();
