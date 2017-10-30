@@ -60,7 +60,7 @@ public class BenchmarkSnap {
         // csv Reader Snap
         CsvMapper mapper = new CsvMapper();
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
-        File csvFile = new File("Archive/test.csv");
+        File csvFile = new File("test.csv");
 
         MappingIterator<Map<String, Object>> iterator = mapper.reader(Map.class)
                 .with(schema)

@@ -12,7 +12,6 @@ import org.apache.flink.api.java.io.TextOutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.print.Doc;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class BenchmarkWithoutSnap {
     private static final Logger logger = LoggerFactory.getLogger(BenchmarkWithoutSnap.class.getName());
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        
+
         // get flink environment.
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
@@ -61,7 +60,7 @@ public class BenchmarkWithoutSnap {
         // csv Reader Snap
         CsvMapper mapper = new CsvMapper();
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
-        File csvFile = new File("Archive/test.csv");
+        File csvFile = new File("test.csv");
 
         MappingIterator<Map<String, Object>> iterator = mapper.reader(Map.class)
                 .with(schema)
