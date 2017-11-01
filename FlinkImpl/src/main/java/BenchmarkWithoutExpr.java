@@ -12,6 +12,7 @@ import org.apache.flink.api.java.io.TextOutputFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.print.Doc;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,9 +20,9 @@ import java.util.Map;
 
 import static org.apache.flink.core.fs.FileSystem.WriteMode.OVERWRITE;
 
-public class BenchmarkWithoutSnap {
+public class BenchmarkWithoutExpr {
 
-    private static final Logger logger = LoggerFactory.getLogger(BenchmarkWithoutSnap.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(BenchmarkWithoutExpr.class.getName());
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
@@ -94,7 +95,7 @@ public class BenchmarkWithoutSnap {
 
         // Writer Snap
 
-        filterOut.writeAsFormattedText("BenchmarkWithoutSnap.csv", OVERWRITE,
+        filterOut.writeAsFormattedText("BenchmarkWithoutExpr.csv", OVERWRITE,
                 new TextOutputFormat.TextFormatter<Document>() {
                     @Override
                     public String format(Document document) {
