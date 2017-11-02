@@ -159,7 +159,7 @@ public class BenchmarkPOJO {
             }
         }
 
-        long startTime1 = System.nanoTime();
+        long startTime = System.nanoTime();
         for (int i = 0; i < 50; i++) {
 
             process(env);
@@ -169,14 +169,15 @@ public class BenchmarkPOJO {
                 e.printStackTrace();
             }
         }
-        long endTime1 = System.nanoTime();
+        long endTime = System.nanoTime();
 
-        long duration1 = (endTime1 - startTime1);  //divide by 1000000 to get milliseconds.
+        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
 //        System.out.println("It takes : " + duration1 / 1000000l + " milliseconds to finish.");
-        logger.info("It takes : " + duration1 / 1000000L / 50L + " milliseconds to finish.");
+        logger.info("It takes : " + duration / 1000000L / 50L + " milliseconds to finish.");
     }
 
     static void process(ExecutionEnvironment env) {
+        long startTime = System.nanoTime();
 
         DataSet<InputCSV> csvInput = env.readCsvFile("test.csv")
                 .ignoreFirstLine()
@@ -184,7 +185,11 @@ public class BenchmarkPOJO {
                 .pojoType(InputCSV.class, "dRGDefinition", "providerId", "providerName", "providerStreetAddress",
                         "providerCity", "providerState", "providerZipCode", "hospitalReferralRegionDescription",
                         "totalDischarges", "averageCoveredCharges", "averageTotalPayments", "averageMedicarePayments");
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+        logger.info("read takes : " + duration / 1000000L + " milliseconds to finish.");
 
+        startTime = System.nanoTime();
         DataSet<InputCSV> output0 = csvInput.filter(new FilterFunction<InputCSV>() {
             @Override
             public boolean filter(InputCSV inputCSV) throws Exception {
@@ -192,7 +197,11 @@ public class BenchmarkPOJO {
             }
         }).sortPartition("providerCity", Order.DESCENDING)
                 .partitionByRange("providerCity");
+        endTime = System.nanoTime();
+        duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+        logger.info("execute takes : " + duration / 1000000L + " milliseconds to finish.");
 
+        startTime = System.nanoTime();
         output0.writeAsFormattedText("BenchmarkPOJO.csv", OVERWRITE,
                 new TextOutputFormat.TextFormatter<InputCSV>() {
                     @Override
@@ -207,6 +216,9 @@ public class BenchmarkPOJO {
                                 + inputCSV.getProviderName() + "|";
                     }
                 }).setParallelism(1);
+        endTime = System.nanoTime();
+        duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+        logger.info("write takes : " + duration / 1000000L + " milliseconds to finish.");
     }
 
 

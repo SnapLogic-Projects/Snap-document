@@ -12,6 +12,10 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang3.tuple.Pair;
 import sl.EvaluatorUtils;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -21,10 +25,12 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 
 
-public class ExpressionEnv {
+public class ExpressionEnv implements Externalizable {
 
     private HashMap<String, Object> jsonData;
     private HashMap<String, Object> envParam;
+    ParseTree tree;
+    ScopeStack scopeStack;
 
     public ExpressionEnv(){
         jsonData = new HashMap<String, Object>() {{
@@ -39,37 +45,40 @@ public class ExpressionEnv {
         }};
     }
 
+    public ExpressionEnv(Map<String, Object> jsonData, ParseTree tree, ScopeStack scopeStack) {
+
+        this.jsonData = new HashMap<String, Object>(jsonData);
+        this.envParam = new HashMap<String, Object>();
+        this.tree = tree;
+        this.scopeStack = scopeStack;
+    }
+
     public ExpressionEnv(Map<String, Object> jsonData) {
+
         this.jsonData = new HashMap<String, Object>(jsonData);
         this.envParam = new HashMap<String, Object>();
     }
 
+    public ExpressionEnv(ParseTree tree, ScopeStack scopeStack) {
+        this.tree = tree;
+        this.scopeStack = scopeStack;
+    }
 
-//    public String exec() {
-//        ExpressionConsole console = new ExpressionConsole();
-//        return console.eval(String.format("eval(%s)",cmd),console.jsonData,console.envParam).toString();
+    public ExpressionEnv(ScopeStack scopeStack) {
+        this.scopeStack = scopeStack;
+    }
+
+//    public void init(String inputStr, Map<String, Object> envData) {
+//
+//        tree = InitializeANTLR(inputStr);
+//        scopeStack = InitializeEnvData(envData);
 //    }
 
-    public <T> T eval(String inputStr) {
-        ScopeStack scopesStack = new ScopeStack();
-        scopesStack.push(new GlobalScope());
-        if (envParam != null) {
-            scopesStack.push(new EnvironmentScope(envParam));
-        }
-        return eval(inputStr, jsonData, scopesStack);
-    }
+    public <T> T eval(String inputStr, Object data) {
 
-    public <T> T eval(String inputStr, Object data, Map<String, Object> envData) {
-        ScopeStack scopeStack = new ScopeStack();
-        scopeStack.push(new GlobalScope());
-        if (envData != null) {
-            scopeStack.push(new EnvironmentScope(envData));
-        }
-        return eval(inputStr, data, scopeStack);
-    }
+        JaninoStringGeneratorVisitor visitor = new JaninoStringGeneratorVisitor(data, null, null);
 
-    public <T> T eval(String inputStr, Object data, ScopeStack scopeStack) {
-        Pair<ParseTree, JaninoStringGeneratorVisitor> parseTreeVisitorPair = parse(inputStr, data);
+        Pair<ParseTree, JaninoStringGeneratorVisitor> parseTreeVisitorPair = Pair.of(tree, visitor);
         JaninoStringGeneratorVisitor janinoStringGeneratorVisitor = parseTreeVisitorPair.getRight();
         SnapLogicExpression evaluator = janinoStringGeneratorVisitor.buildExpression(inputStr, parseTreeVisitorPair.getKey());
         try {
@@ -102,7 +111,20 @@ public class ExpressionEnv {
             assertNull(expressionContext.scopes);
         }
     }
-    public Pair<ParseTree, JaninoStringGeneratorVisitor> parse(String inputStr, Object data) {
+//    public Pair<ParseTree, JaninoStringGeneratorVisitor> parse(String inputStr, Object data) {
+//        CharStream input = new ANTLRInputStream(inputStr);
+//        SnapExpressionsLexer lexer = new BailSnapExpressionsLexer(inputStr, input);
+//        TokenStream tokens = new CommonTokenStream(lexer);
+//        SnapExpressionsParser parser = new SnapExpressionsParser(tokens);
+//        parser.removeErrorListeners();
+//        parser.setErrorHandler(new BailErrorStrategy(inputStr));
+//        ParseTree tree = parser.eval();
+//        JaninoStringGeneratorVisitor visitor = new JaninoStringGeneratorVisitor(data, null,
+//                null);
+//        return Pair.of(tree, visitor);
+//    }
+
+    static public ParseTree InitializeANTLR(String inputStr){
         CharStream input = new ANTLRInputStream(inputStr);
         SnapExpressionsLexer lexer = new BailSnapExpressionsLexer(inputStr, input);
         TokenStream tokens = new CommonTokenStream(lexer);
@@ -110,8 +132,25 @@ public class ExpressionEnv {
         parser.removeErrorListeners();
         parser.setErrorHandler(new BailErrorStrategy(inputStr));
         ParseTree tree = parser.eval();
-        JaninoStringGeneratorVisitor visitor = new JaninoStringGeneratorVisitor(data, null,
-                null);
-        return Pair.of(tree, visitor);
+
+        return tree;
+    }
+    static public ScopeStack InitializeEnvData(Map<String, Object> envData) {
+        ScopeStack scopeStack = new ScopeStack();
+        scopeStack.push(new GlobalScope());
+        if (envData != null) {
+            scopeStack.push(new EnvironmentScope(envData));
+        }
+        return scopeStack;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+
     }
 }

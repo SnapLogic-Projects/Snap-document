@@ -28,7 +28,7 @@ public class BenchmarkTable {
             }
         }
 
-        long startTime1 = System.nanoTime();
+        long startTime = System.nanoTime();
         for (int i = 0; i < 50; i++) {
 
             process(env);
@@ -38,11 +38,11 @@ public class BenchmarkTable {
                 e.printStackTrace();
             }
         }
-        long endTime1 = System.nanoTime();
+        long endTime = System.nanoTime();
 
-        long duration1 = (endTime1 - startTime1);  //divide by 1000000 to get milliseconds.
+        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
 //        System.out.println("It takes : " + duration1 / 1000000l + " milliseconds to finish.");
-        logger.info("It takes : " + duration1 / 1000000L / 50L + " milliseconds to finish.");
+        logger.info("It takes : " + duration / 1000000L / 50L + " milliseconds to finish.");
     }
 
     static void process(ExecutionEnvironment env) throws IOException {

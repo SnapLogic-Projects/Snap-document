@@ -40,7 +40,7 @@ public class BenchmarkWithoutExpr {
             }
         }
 
-        long startTime1 = System.nanoTime();
+        long startTime = System.nanoTime();
         for (int i = 0; i < 50; i++) {
 
             process(env);
@@ -50,14 +50,15 @@ public class BenchmarkWithoutExpr {
                 e.printStackTrace();
             }
         }
-        long endTime1 = System.nanoTime();
+        long endTime = System.nanoTime();
 
-        long duration1 = (endTime1 - startTime1);  //divide by 1000000 to get milliseconds.
+        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
 //        System.out.println("It takes : " + duration1 / 1000000l + " milliseconds to finish.");
-        logger.info("It takes : " + duration1 / 1000000L / 50L + " milliseconds to finish.");
+        logger.info("It takes : " + duration / 1000000L / 50L + " milliseconds to finish.");
     }
 
     static void process(ExecutionEnvironment env) throws IOException {
+        long startTime = System.nanoTime();
         // csv Reader Snap
         CsvMapper mapper = new CsvMapper();
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
@@ -74,7 +75,11 @@ public class BenchmarkWithoutExpr {
             Document cur = new DocumentImpl(map);
             list.add(cur);
         }
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+        logger.info("data transfer takes : " + duration / 1000000L + " milliseconds to finish.");
 
+        startTime = System.nanoTime();
         // Filter Snap
         final DataSet<Document> csvInput = env.fromCollection(list);
 
@@ -92,7 +97,11 @@ public class BenchmarkWithoutExpr {
                 return (String) ((Map<String, Object>) document.get()).get("ProviderCity");
             }
         }, Order.DESCENDING);
+        endTime = System.nanoTime();
+        duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+        logger.info("execute takes : " + duration / 1000000L + " milliseconds to finish.");
 
+        startTime = System.nanoTime();
         // Writer Snap
 
         filterOut.writeAsFormattedText("BenchmarkWithoutExpr.csv", OVERWRITE,
@@ -110,5 +119,8 @@ public class BenchmarkWithoutExpr {
                     }
                 }
         ).setParallelism(1);
+        endTime = System.nanoTime();
+        duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
+        logger.info("write takes : " + duration / 1000000L + " milliseconds to finish.");
     }
 }

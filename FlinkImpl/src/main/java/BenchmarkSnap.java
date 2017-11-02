@@ -3,6 +3,8 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.snaplogic.Document;
 import com.snaplogic.DocumentImpl;
+import com.snaplogic.common.expressions.ScopeStack;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.apache.flink.core.fs.FileSystem.WriteMode.OVERWRITE;
@@ -27,11 +30,13 @@ public class BenchmarkSnap {
 
         // get flink environment.
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        final ParseTree tree = ExpressionEnv.InitializeANTLR("$ProviderState == 'AL'");
+        final ScopeStack scopeStack = ExpressionEnv.InitializeEnvData(new HashMap<String, Object>());
 
         // warn up
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1; i++) {
 
-            process(env);
+            process(env, tree, scopeStack);
             try {
                 env.execute();
             } catch (Exception e) {
@@ -39,24 +44,24 @@ public class BenchmarkSnap {
             }
         }
 
-        long startTime1 = System.nanoTime();
-        for (int i = 0; i < 50; i++) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < 1; i++) {
 
-            process(env);
+            process(env, tree, scopeStack);
             try {
                 env.execute();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        long endTime1 = System.nanoTime();
+        long endTime = System.nanoTime();
 
-        long duration1 = (endTime1 - startTime1);  //divide by 1000000 to get milliseconds.
+        long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
 //        System.out.println("It takes : " + duration1 / 1000000l + " milliseconds to finish.");
-        logger.info("It takes : " + duration1 / 1000000L / 50L + " milliseconds to finish.");
+        logger.info("It takes : " + duration / 1000000L / 50L + " milliseconds to finish.");
     }
 
-    static void process(ExecutionEnvironment env) throws IOException {
+    static void process(ExecutionEnvironment env, final ParseTree tree, final ScopeStack scopes) throws IOException {
         // csv Reader Snap
         CsvMapper mapper = new CsvMapper();
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
@@ -80,8 +85,8 @@ public class BenchmarkSnap {
         DataSet<Document> filterOut = csvInput.filter(new FilterFunction<Document>() {
             @Override
             public boolean filter(Document document) throws Exception {
-                ExpressionEnv filterEnv = new ExpressionEnv((Map<String, Object>)document.get());
-                return filterEnv.eval("$ProviderState == 'AL'");
+                ExpressionEnv filterEnv = new ExpressionEnv((Map<String, Object>) document.get(), tree, scopes);
+                return filterEnv.eval("$ProviderState == 'AL'", document.get());
             }
         });
 
