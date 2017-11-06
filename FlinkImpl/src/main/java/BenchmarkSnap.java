@@ -1,9 +1,17 @@
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.google.common.base.Throwables;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.snaplogic.Document;
 import com.snaplogic.DocumentImpl;
+import com.snaplogic.api.ExecutionException;
 import com.snaplogic.common.expressions.ScopeStack;
+import com.snaplogic.expression.ExpressionUtil;
+import com.snaplogic.expression.GlobalScope;
 import com.snaplogic.expression.JaninoStringGeneratorVisitor;
 import com.snaplogic.expression.SnapLogicExpression;
 import com.snaplogic.snap.api.SnapDataException;
@@ -35,7 +43,18 @@ import static org.apache.flink.core.fs.FileSystem.WriteMode.OVERWRITE;
 public class BenchmarkSnap {
 
     private static final Logger logger = LoggerFactory.getLogger(BenchmarkSnap.class.getName());
-    private static final ParseTree tree = ExpressionEnv.InitializeANTLR("$ProviderState == 'AL'");
+    private static final LoadingCache<String, SnapLogicExpression> PARSE_TREE_CACHE =
+            CacheBuilder.newBuilder()
+                    .softValues()
+                    .build(new CacheLoader<String, SnapLogicExpression>() {
+                        @Override
+                        public SnapLogicExpression load(final String key) throws Exception {
+                            return ExpressionUtil.compile(key);
+                        }
+                    });
+    private static final GlobalScope GLOBAL_SCOPE = new GlobalScope();
+    private static final DefaultValueHandler DEFAULT_VALUE_HANDLER = new DefaultValueHandler();
+    private static final String expression = "$ProviderState == 'AL'";
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
@@ -45,7 +64,7 @@ public class BenchmarkSnap {
         final ScopeStack scopeStack = ExpressionEnv.InitializeEnvData(new HashMap<String, Object>());
 
         // warn up
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 5; i++) {
 
             process(env, scopeStack);
             try {
@@ -56,7 +75,7 @@ public class BenchmarkSnap {
         }
 
         long startTime = System.nanoTime();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 10; i++) {
 
             process(env, scopeStack);
             try {
@@ -69,14 +88,14 @@ public class BenchmarkSnap {
 
         long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
 //        System.out.println("It takes : " + duration1 / 1000000l + " milliseconds to finish.");
-        logger.info("It takes : " + duration / 1000000L + " milliseconds to finish.");
+        logger.info("It takes : " + duration / 1000000L/10 + " milliseconds to finish.");
     }
 
     static void process(ExecutionEnvironment env, final ScopeStack scopes) throws IOException {
         // csv Reader Snap
         CsvMapper mapper = new CsvMapper();
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
-        File csvFile = new File("test80000.csv");
+        File csvFile = new File("test.csv");
 
         MappingIterator<Map<String, Object>> iterator = mapper.reader(Map.class)
                 .with(schema)
@@ -96,45 +115,31 @@ public class BenchmarkSnap {
         DataSet<Document> filterOut = csvInput.filter(new FilterFunction<Document>() {
             @Override
             public boolean filter(Document document) throws Exception {
-                return eval("$ProviderState == 'AL'", document.get());
-            }
+                SnapLogicExpression snapLogicExpression = PARSE_TREE_CACHE.get(expression);
 
-            public <T> T eval(String inputStr,Object data){
-                JaninoStringGeneratorVisitor visitor = new JaninoStringGeneratorVisitor(data, null, null);
-
-                Pair<ParseTree, JaninoStringGeneratorVisitor> parseTreeVisitorPair = Pair.of(tree, visitor);
-                JaninoStringGeneratorVisitor janinoStringGeneratorVisitor = parseTreeVisitorPair.getRight();
-                SnapLogicExpression evaluator = janinoStringGeneratorVisitor.buildExpression(inputStr, parseTreeVisitorPair.getKey());
-                try {
-                    Object retval = evaluator.evaluate(data, scopes, new DefaultValueHandler());
-
-                    if (retval instanceof Number) {
-                        boolean validNumber = false;
-
-                        if (retval instanceof BigDecimal || retval instanceof BigInteger) {
-                            validNumber = true;
-                        }
-                        if (retval instanceof Double) {
-                            double dval = (Double) retval;
-                            if (Double.isInfinite(dval) || Double.isNaN(dval)) {
-                                validNumber = true;
-                            }
-                        }
-                        if (!validNumber) {
-                            fail("Expression language numbers should be BitIntegers or BigDecimals");
-                        }
+                ScopeStack scopeStack;
+                if (scopes != null && scopes.getClass() == ScopeStack.class) {
+                    scopeStack = (ScopeStack) scopes;
+                } else {
+                    scopeStack = new ScopeStack();
+                    if (scopes != null) {
+                        scopeStack.pushAllScopes(scopes);
+                    } else {
+                        scopeStack.push(GLOBAL_SCOPE);
                     }
-                    return (T) retval;
-                } catch (RuntimeException e) {
+                }
+                try {
+                    return (Boolean) snapLogicExpression.evaluate(document.get(), scopeStack, DEFAULT_VALUE_HANDLER);
+                } catch (SnapDataException|ExecutionException e) {
                     throw e;
                 } catch (Throwable th) {
-                    throw new SnapDataException(th, "Unhandled exception");
-                } finally {
-                    EvaluatorUtils.ExpressionContext expressionContext = EvaluatorUtils
-                            .CONTEXT_THREAD_LOCAL.get();
-                    assertNull(expressionContext.scopes);
+                    throw new SnapDataException(th, "Unexpected error occurred while " +
+                            "evaluating expression: %s")
+                            .formatWith(expression)
+                            .withResolution("Please check your expression");
                 }
             }
+
         });
 
         // Sort Snap
