@@ -32,10 +32,9 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 import static org.apache.flink.core.fs.FileSystem.WriteMode.OVERWRITE;
 
-public class BenchmarkSnap {
+public class BenchmarkSnapOld {
 
     private static final Logger logger = LoggerFactory.getLogger(BenchmarkSnap.class.getName());
-    private static final ParseTree tree = ExpressionEnv.InitializeANTLR("$ProviderState == 'AL'");
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
@@ -69,7 +68,7 @@ public class BenchmarkSnap {
 
         long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
 //        System.out.println("It takes : " + duration1 / 1000000l + " milliseconds to finish.");
-        logger.info("It takes : " + duration / 1000000L + " milliseconds to finish.");
+        logger.info("It takes : " + duration / 1000000L + " milliseconds to finish.(Old)");
     }
 
     static void process(ExecutionEnvironment env, final ScopeStack scopes) throws IOException {
@@ -96,44 +95,8 @@ public class BenchmarkSnap {
         DataSet<Document> filterOut = csvInput.filter(new FilterFunction<Document>() {
             @Override
             public boolean filter(Document document) throws Exception {
-                return eval("$ProviderState == 'AL'", document.get());
-            }
-
-            public <T> T eval(String inputStr,Object data){
-                JaninoStringGeneratorVisitor visitor = new JaninoStringGeneratorVisitor(data, null, null);
-
-                Pair<ParseTree, JaninoStringGeneratorVisitor> parseTreeVisitorPair = Pair.of(tree, visitor);
-                JaninoStringGeneratorVisitor janinoStringGeneratorVisitor = parseTreeVisitorPair.getRight();
-                SnapLogicExpression evaluator = janinoStringGeneratorVisitor.buildExpression(inputStr, parseTreeVisitorPair.getKey());
-                try {
-                    Object retval = evaluator.evaluate(data, scopes, new DefaultValueHandler());
-
-                    if (retval instanceof Number) {
-                        boolean validNumber = false;
-
-                        if (retval instanceof BigDecimal || retval instanceof BigInteger) {
-                            validNumber = true;
-                        }
-                        if (retval instanceof Double) {
-                            double dval = (Double) retval;
-                            if (Double.isInfinite(dval) || Double.isNaN(dval)) {
-                                validNumber = true;
-                            }
-                        }
-                        if (!validNumber) {
-                            fail("Expression language numbers should be BitIntegers or BigDecimals");
-                        }
-                    }
-                    return (T) retval;
-                } catch (RuntimeException e) {
-                    throw e;
-                } catch (Throwable th) {
-                    throw new SnapDataException(th, "Unhandled exception");
-                } finally {
-                    EvaluatorUtils.ExpressionContext expressionContext = EvaluatorUtils
-                            .CONTEXT_THREAD_LOCAL.get();
-                    assertNull(expressionContext.scopes);
-                }
+                ExpressionEnv env = new ExpressionEnv((Map<String, Object>) document.get());
+                return env.eval("$ProviderState == 'AL'", document.get());
             }
         });
 

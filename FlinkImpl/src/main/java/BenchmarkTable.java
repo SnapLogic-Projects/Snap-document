@@ -50,7 +50,7 @@ public class BenchmarkTable {
 
         CsvTableSource csvSource = CsvTableSource
                 .builder()
-                .path("test.csv")
+                .path("test100.csv")
                 .field("DRGDefinition", Types.STRING())
                 .field("ProviderId", Types.INT())
                 .field("ProviderName", Types.STRING())

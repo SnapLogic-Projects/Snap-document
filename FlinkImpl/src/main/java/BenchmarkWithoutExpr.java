@@ -89,6 +89,12 @@ public class BenchmarkWithoutExpr {
                 return ((Map<String, Object>) document.get()).get("ProviderState").equals("AL");
             }
         });
+        DataSet<Document> filterOut1 = csvInput.filter(new FilterFunction<Document>() {
+            @Override
+            public boolean filter(Document document) throws Exception {
+                return ((Map<String, Object>) document.get()).get("ProviderState").equals("AL");
+            }
+        });
 
         // Sort Snap
         filterOut.sortPartition(new KeySelector<Document, String>() {

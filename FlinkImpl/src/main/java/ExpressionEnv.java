@@ -25,32 +25,12 @@ import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 
 
-public class ExpressionEnv implements Externalizable {
+public class ExpressionEnv {
 
     private HashMap<String, Object> jsonData;
     private HashMap<String, Object> envParam;
-    ParseTree tree;
-    ScopeStack scopeStack;
 
     public ExpressionEnv(){
-        jsonData = new HashMap<String, Object>() {{
-            put("firstName", "Dean");
-            put("age", new BigInteger("26"));
-            put("title", "student");
-        }};
-
-        envParam = new HashMap<String, Object>() {{
-            put("foo", "bar");
-            put("param", "'FIRST_NAME = ' + $firstName");
-        }};
-    }
-
-    public ExpressionEnv(Map<String, Object> jsonData, ParseTree tree, ScopeStack scopeStack) {
-
-        this.jsonData = new HashMap<String, Object>(jsonData);
-        this.envParam = new HashMap<String, Object>();
-        this.tree = tree;
-        this.scopeStack = scopeStack;
     }
 
     public ExpressionEnv(Map<String, Object> jsonData) {
@@ -59,22 +39,9 @@ public class ExpressionEnv implements Externalizable {
         this.envParam = new HashMap<String, Object>();
     }
 
-    public ExpressionEnv(ParseTree tree, ScopeStack scopeStack) {
-        this.tree = tree;
-        this.scopeStack = scopeStack;
-    }
-
-    public ExpressionEnv(ScopeStack scopeStack) {
-        this.scopeStack = scopeStack;
-    }
-
-//    public void init(String inputStr, Map<String, Object> envData) {
-//
-//        tree = InitializeANTLR(inputStr);
-//        scopeStack = InitializeEnvData(envData);
-//    }
-
     public <T> T eval(String inputStr, Object data) {
+        ParseTree tree = InitializeANTLR(inputStr);
+        ScopeStack scopeStack = InitializeEnvData(this.envParam);
 
         JaninoStringGeneratorVisitor visitor = new JaninoStringGeneratorVisitor(data, null, null);
 
@@ -142,15 +109,5 @@ public class ExpressionEnv implements Externalizable {
             scopeStack.push(new EnvironmentScope(envData));
         }
         return scopeStack;
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-
     }
 }
