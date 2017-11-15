@@ -55,8 +55,9 @@ public class BenchmarkSnap {
     private static final GlobalScope GLOBAL_SCOPE = new GlobalScope();
     private static final DefaultValueHandler DEFAULT_VALUE_HANDLER = new DefaultValueHandler();
     private static final String expression = "$ProviderState == 'AL'";
+    private static SnapLogicExpression snapLogicExpression;
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, java.util.concurrent.ExecutionException {
 
         // get flink environment.
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -64,19 +65,15 @@ public class BenchmarkSnap {
         final ScopeStack scopeStack = ExpressionEnv.InitializeEnvData(new HashMap<String, Object>());
 
         // warn up
-        for (int i = 0; i < 5; i++) {
-
-            process(env, scopeStack);
-            try {
-                env.execute();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        process(env, scopeStack);
+        try {
+            env.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
         long startTime = System.nanoTime();
-        for (int i = 0; i < 10; i++) {
 
+        for(int i = 0;i<5;i++){
             process(env, scopeStack);
             try {
                 env.execute();
@@ -84,15 +81,18 @@ public class BenchmarkSnap {
                 e.printStackTrace();
             }
         }
+
+
         long endTime = System.nanoTime();
 
         long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
-//        System.out.println("It takes : " + duration1 / 1000000l + " milliseconds to finish.");
-        logger.info("It takes : " + duration / 1000000L/10 + " milliseconds to finish.");
+        //System.out.println("It takes : " + duration1 / 1000000l + " milliseconds to finish.");
+        logger.info("It takes : " + duration / 1000000L/5 + " milliseconds to finish.");
     }
 
-    static void process(ExecutionEnvironment env, final ScopeStack scopes) throws IOException {
+    static void process(ExecutionEnvironment env, final ScopeStack scopes) throws IOException, java.util.concurrent.ExecutionException {
         // csv Reader Snap
+        snapLogicExpression = PARSE_TREE_CACHE.get(expression);
         CsvMapper mapper = new CsvMapper();
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
         File csvFile = new File("test.csv");
@@ -115,7 +115,7 @@ public class BenchmarkSnap {
         DataSet<Document> filterOut = csvInput.filter(new FilterFunction<Document>() {
             @Override
             public boolean filter(Document document) throws Exception {
-                SnapLogicExpression snapLogicExpression = PARSE_TREE_CACHE.get(expression);
+
 
                 ScopeStack scopeStack;
                 if (scopes != null && scopes.getClass() == ScopeStack.class) {
