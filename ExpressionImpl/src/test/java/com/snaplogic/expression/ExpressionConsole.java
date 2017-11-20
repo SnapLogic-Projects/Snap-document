@@ -58,9 +58,13 @@ public class ExpressionConsole {
 //            put("title", "student");
 //        }};
 
-        SnapRow nameData = new SnapRow(2);
-        nameData.setField("firstName",0,"Yiding");
-        nameData.setField("lastName",1,"Liu");
+        HashMap<String, Integer> fieldMap = new HashMap<String,Integer>(){{
+            put("firstName",0);
+            put("lastName",1);
+        }};
+        SnapRow nameData = new SnapRow(2,fieldMap);
+        nameData.setField(0,"Yiding");
+        nameData.setField(1,"Liu");
         rowData = new SnapRow(3);
         rowData.setField("name",0,nameData);
         rowData.setField("age",1,new BigInteger("26"));

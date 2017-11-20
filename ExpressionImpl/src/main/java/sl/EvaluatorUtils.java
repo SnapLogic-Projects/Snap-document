@@ -847,7 +847,7 @@ public final class EvaluatorUtils {
         switch (currentObjType) {
             case SNAP_ROW:
                 SnapRow sr = (SnapRow)obj;
-                return sr.getFeild(field);
+                return sr.getField(field);
             case MAP:
                 Map<?, ?> map = (Map<?, ?>) obj;
                 Object val = map.get(field);

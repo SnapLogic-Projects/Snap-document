@@ -48,7 +48,7 @@ public class BenchmarkSnapRow {
     private static final String expression = "$ProviderState == 'AL'";
     private static SnapLogicExpression snapLogicExpression;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws java.util.concurrent.ExecutionException {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         final ScopeStack scopeStack = ExpressionEnv.InitializeEnvData(new HashMap<String, Object>());
         //warm up
@@ -71,8 +71,8 @@ public class BenchmarkSnapRow {
     }
 
 
-    public static void process(ExecutionEnvironment env, final ScopeStack scopes) {
-
+    public static void process(ExecutionEnvironment env, final ScopeStack scopes) throws java.util.concurrent.ExecutionException {
+        snapLogicExpression = PARSE_TREE_CACHE.get(expression);
         // parse header
         String headStr = "DRGDefinition,ProviderId,ProviderName,ProviderStreetAddress,ProviderCity," +
                 "ProviderState,ProviderZipCode,HospitalReferralRegionDescription, TotalDischarges , " +
@@ -98,7 +98,7 @@ public class BenchmarkSnapRow {
             public SnapRow map(Row row) throws Exception {
                 SnapRow snapRow = new SnapRow(fieldNames.length, fieldMap);
                 for (int i = 0; i < row.getArity(); i++) {
-                    snapRow.setField(i, row.getField(i));
+                    snapRow.setField( i, row.getField(i));
                 }
                 return snapRow;
             }
@@ -134,7 +134,7 @@ public class BenchmarkSnapRow {
         DataSet<SnapRow> sorted = filtered.sortPartition(new KeySelector<SnapRow, String>() {
             @Override
             public String getKey(SnapRow value) throws Exception {
-                return (String) value.getFeild("ProviderCity");
+                return (String) value.getField("ProviderCity");
             }
         }, Order.DESCENDING).setParallelism(1);
 

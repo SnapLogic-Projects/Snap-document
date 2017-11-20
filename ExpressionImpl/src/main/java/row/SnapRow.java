@@ -18,7 +18,7 @@ public class SnapRow extends Row{
         this.fieldName = new HashMap<>();
     }
 
-    public Object getFeild(String fieldName){
+    public Object getField(String fieldName){
         return getField(this.fieldName.get(fieldName));
     }
 
