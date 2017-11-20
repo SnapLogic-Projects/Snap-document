@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang3.tuple.Pair;
+import row.SnapRow;
 import sl.EvaluatorUtils;
 
 import java.math.BigDecimal;
@@ -43,16 +44,27 @@ import static org.junit.Assert.fail;
  */
 public class ExpressionConsole {
 
-    private HashMap<String, Object> jsonData;
+//    private HashMap<String, Object> jsonData;
+    private SnapRow rowData;
     private HashMap<String, Object> envParam;
 
     public ExpressionConsole(){
-        jsonData = new HashMap<String, Object>() {{
-            put("firstName", "Dean");
-            put("age", new BigInteger("26"));
-            put("title", "student");
-        }};
+//        jsonData = new HashMap<String, Object>() {{
+//            put("name", new HashMap<String, Object>(){{
+//                put("firstName","Yiding");
+//                put("lastName","Liu");
+//            }});
+//            put("age", new BigInteger("26"));
+//            put("title", "student");
+//        }};
 
+        SnapRow nameData = new SnapRow(2);
+        nameData.setField("firstName",0,"Yiding");
+        nameData.setField("lastName",1,"Liu");
+        rowData = new SnapRow(3);
+        rowData.setField("name",0,nameData);
+        rowData.setField("age",1,new BigInteger("26"));
+        rowData.setField("title",2,"student");
         envParam = new HashMap<String, Object>() {{
             put("foo", "bar");
             put("param", "'FIRST_NAME = ' + $firstName");
@@ -63,14 +75,21 @@ public class ExpressionConsole {
         ExpressionConsole console = new ExpressionConsole();
         Scanner scanner = new Scanner(System.in);
         String line = "";
+        System.out.println("Ready for input");
         while(true){
             line = scanner.nextLine();
             if(line.equals("exit") || line.equals("q")) return;
+//            if(line.charAt(0)!='$'){
+//                System.out.println(console.eval(String.format("eval(%s)",line),console.jsonData,console.envParam).toString());
+//            }
+//            else {
+//                System.out.println(console.eval(line,console.jsonData,console.envParam).toString());
+//            }
             if(line.charAt(0)!='$'){
-                System.out.println(console.eval(String.format("eval(%s)",line),console.jsonData,console.envParam).toString());
+                System.out.println(console.eval(String.format("eval(%s)",line),console.rowData,console.envParam).toString());
             }
             else {
-                System.out.println(console.eval(line,console.jsonData,console.envParam).toString());
+                System.out.println(console.eval(line,console.rowData,console.envParam).toString());
             }
         }
     }
@@ -114,18 +133,6 @@ public class ExpressionConsole {
             assertNull(expressionContext.scopes);
         }
     }
-//    public Pair<ParseTree, JaninoStringGeneratorVisitor> parse(String inputStr, Object data) {
-//        CharStream input = new ANTLRInputStream(inputStr);
-//        SnapExpressionsLexer lexer = new BailSnapExpressionsLexer(inputStr, input);
-//        TokenStream tokens = new CommonTokenStream(lexer);
-//        SnapExpressionsParser parser = new SnapExpressionsParser(tokens);
-//        parser.removeErrorListeners();
-//        parser.setErrorHandler(new BailErrorStrategy(inputStr));
-//        ParseTree tree = parser.eval();
-//        JaninoStringGeneratorVisitor visitor = new JaninoStringGeneratorVisitor(data, null, null);
-//        return Pair.of(tree, visitor);
-//    }
-
     public ParseTree InitializeANTLR(String inputStr){
         CharStream input = new ANTLRInputStream(inputStr);
         SnapExpressionsLexer lexer = new BailSnapExpressionsLexer(inputStr, input);

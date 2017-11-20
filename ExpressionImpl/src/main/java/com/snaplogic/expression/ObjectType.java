@@ -26,6 +26,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import row.SnapRow;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -62,6 +63,7 @@ public enum ObjectType {
     LONG("Long"),
     // ordinal 8 and onwards
     NULL("null"),
+    SNAP_ROW("Snaprow"),
     MAP("Map"),
     BOOLEAN("Boolean"),
     LIST("List"),
@@ -113,6 +115,8 @@ public enum ObjectType {
             return CLASS;
         } else if (obj instanceof JavascriptFunction) {
             return FUNCTION;
+        } else if (obj instanceof SnapRow) {
+            return SNAP_ROW;
         }
         ObjectType type = CLASS_TO_TYPE.get(obj.getClass());
         return type == null ? OTHER : type;

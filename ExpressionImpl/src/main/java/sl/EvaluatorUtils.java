@@ -45,6 +45,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
+import row.SnapRow;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -841,10 +842,12 @@ public final class EvaluatorUtils {
         }
     }
 
-    public static Object propertyRef(String path, String text, Object obj, String field,
-                                     DataValueHandler<Object> handler) {
+    public static Object propertyRef(String path, String text, Object obj, String field,DataValueHandler<Object> handler) {
         ObjectType currentObjType = ObjectType.objectToType(obj);
         switch (currentObjType) {
+            case SNAP_ROW:
+                SnapRow sr = (SnapRow)obj;
+                return sr.getFeild(field);
             case MAP:
                 Map<?, ?> map = (Map<?, ?>) obj;
                 Object val = map.get(field);
