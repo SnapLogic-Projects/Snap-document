@@ -56,7 +56,7 @@ public class BenchmarkSnapRow {
 
         //test
         long startTime = System.nanoTime();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 5; i++) {
             process(env, scopeStack);
             try {
                 env.execute();
@@ -67,7 +67,7 @@ public class BenchmarkSnapRow {
         long endTime = System.nanoTime();
 
         long duration = (endTime - startTime);  //divide by 1000000 to get milliseconds.
-        logger.info("It takes : " + duration / 1000000L / 50L + " milliseconds to finish.");
+        logger.info("It takes : " + duration / 1000000L / 5L + " milliseconds to finish.");
     }
 
 
