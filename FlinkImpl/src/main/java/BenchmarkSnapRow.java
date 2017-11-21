@@ -10,6 +10,7 @@ import com.snaplogic.snap.api.SnapDataException;
 import com.snaplogic.util.DefaultValueHandler;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -19,6 +20,7 @@ import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.io.TextOutputFormat;
 import org.apache.flink.table.sources.CsvTableSource;
 import org.apache.flink.types.Row;
+import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import row.SnapRow;
@@ -93,16 +95,8 @@ public class BenchmarkSnapRow {
                 ",", "\n", '"', true, null, false);
 
         DataSet<Row> dataSet = csvTableSource.getDataSet(env);
-        DataSet<SnapRow> snapRowDataSet = dataSet.map(new MapFunction<Row, SnapRow>() {
-            @Override
-            public SnapRow map(Row row) throws Exception {
-                SnapRow snapRow = new SnapRow(fieldNames.length, fieldMap);
-                for (int i = 0; i < row.getArity(); i++) {
-                    snapRow.setField( i, row.getField(i));
-                }
-                return snapRow;
-            }
-        });
+        Row2SnapRow mapper = new Row2SnapRow();
+        DataSet<SnapRow> snapRowDataSet = dataSet.map(mapper);
 
         DataSet<SnapRow> filtered = snapRowDataSet.filter(new FilterFunction<SnapRow>() {
             @Override
@@ -158,4 +152,16 @@ public class BenchmarkSnapRow {
                 }
         ).setParallelism(1);
     }
+
+    private static class Row2SnapRow implements MapFunction<Row, SnapRow> {
+        @Override
+        public SnapRow map(Row row) throws Exception {
+            SnapRow snapRow = new SnapRow(row.getArity(), fieldMap);
+            for (int i = 0; i < row.getArity(); i++) {
+                snapRow.setField( i, row.getField(i));
+            }
+            return snapRow;
+        }
+    }
+
 }
