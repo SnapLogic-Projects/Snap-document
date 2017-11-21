@@ -26,4 +26,12 @@ public class SnapRow extends Row{
         super.setField(pos,value);
         this.fieldName.put(name,pos);
     }
+
+    public Map<String, Integer> getFieldName() {
+        return fieldName;
+    }
+
+    public void setFieldName(Map<String, Integer> fieldName) {
+        this.fieldName = fieldName;
+    }
 }

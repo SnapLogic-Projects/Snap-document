@@ -41,6 +41,7 @@ import com.snaplogic.util.DefaultValueHandler;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.apache.flink.types.Row;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -848,6 +849,11 @@ public final class EvaluatorUtils {
             case SNAP_ROW:
                 SnapRow sr = (SnapRow)obj;
                 return sr.getField(field);
+            case ROW:
+                ScopeStack ss = EvaluatorUtils.CONTEXT_THREAD_LOCAL.get().scopes;
+                Integer index = (Integer) ss.get(1).get(String.format("_%s",field)) ;
+                Row row = (Row) obj;
+                return row.getField(index);
             case MAP:
                 Map<?, ?> map = (Map<?, ?>) obj;
                 Object val = map.get(field);

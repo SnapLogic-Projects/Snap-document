@@ -22,6 +22,7 @@ import org.apache.commons.collections.list.AbstractListDecorator;
 import org.apache.commons.collections.map.AbstractMapDecorator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.flink.types.Row;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -63,7 +64,8 @@ public enum ObjectType {
     LONG("Long"),
     // ordinal 8 and onwards
     NULL("null"),
-    SNAP_ROW("Snaprow"),
+    SNAP_ROW("SnapRow"),
+    ROW("Row"),
     MAP("Map"),
     BOOLEAN("Boolean"),
     LIST("List"),
@@ -117,6 +119,8 @@ public enum ObjectType {
             return FUNCTION;
         } else if (obj instanceof SnapRow) {
             return SNAP_ROW;
+        } else if (obj instanceof Row){
+            return ROW;
         }
         ObjectType type = CLASS_TO_TYPE.get(obj.getClass());
         return type == null ? OTHER : type;

@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.flink.types.Row;
 import row.SnapRow;
 import sl.EvaluatorUtils;
 
@@ -45,7 +46,8 @@ import static org.junit.Assert.fail;
 public class ExpressionConsole {
 
 //    private HashMap<String, Object> jsonData;
-    private SnapRow rowData;
+//    private SnapRow rowData;
+    private Row row;
     private HashMap<String, Object> envParam;
 
     public ExpressionConsole(){
@@ -58,20 +60,33 @@ public class ExpressionConsole {
 //            put("title", "student");
 //        }};
 
-        HashMap<String, Integer> fieldMap = new HashMap<String,Integer>(){{
-            put("firstName",0);
-            put("lastName",1);
-        }};
-        SnapRow nameData = new SnapRow(2,fieldMap);
-        nameData.setField(0,"Yiding");
-        nameData.setField(1,"Liu");
-        rowData = new SnapRow(3);
-        rowData.setField("name",0,nameData);
-        rowData.setField("age",1,new BigInteger("26"));
-        rowData.setField("title",2,"student");
+//        HashMap<String, Integer> fieldMap = new HashMap<String,Integer>(){{
+//            put("firstName",0);
+//            put("lastName",1);
+//        }};
+//        SnapRow nameData = new SnapRow(2,fieldMap);
+//        nameData.setField(0,"Yiding");
+//        nameData.setField(1,"Liu");
+//        rowData = new SnapRow(3);
+//        rowData.setField("name",0,nameData);
+//        rowData.setField("age",1,new BigInteger("26"));
+//        rowData.setField("title",2,"student");
+
+        row= new Row(3);
+        Row name = new Row(2);
+        name.setField(0,"Yiding");
+        name.setField(1,"Liu");
+        row.setField(0,name);
+        row.setField(1,new BigInteger("23"));
+        row.setField(2,"student");
         envParam = new HashMap<String, Object>() {{
             put("foo", "bar");
             put("param", "'FIRST_NAME = ' + $firstName");
+            put("name",0);
+            put("age",1);
+            put("title",2);
+            put("firstName",0);
+            put("lastName",1);
         }};
     }
 
@@ -83,17 +98,11 @@ public class ExpressionConsole {
         while(true){
             line = scanner.nextLine();
             if(line.equals("exit") || line.equals("q")) return;
-//            if(line.charAt(0)!='$'){
-//                System.out.println(console.eval(String.format("eval(%s)",line),console.jsonData,console.envParam).toString());
-//            }
-//            else {
-//                System.out.println(console.eval(line,console.jsonData,console.envParam).toString());
-//            }
             if(line.charAt(0)!='$'){
-                System.out.println(console.eval(String.format("eval(%s)",line),console.rowData,console.envParam).toString());
+                System.out.println(console.eval(String.format("eval(%s)",line),console.row,console.envParam).toString());
             }
             else {
-                System.out.println(console.eval(line,console.rowData,console.envParam).toString());
+                System.out.println(console.eval(line,console.row,console.envParam).toString());
             }
         }
     }
