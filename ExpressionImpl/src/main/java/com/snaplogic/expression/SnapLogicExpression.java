@@ -14,12 +14,14 @@ package com.snaplogic.expression;
 import com.snaplogic.common.expressions.DataValueHandler;
 import com.snaplogic.common.expressions.ScopeStack;
 
+import java.io.Serializable;
+
 /**
  * Interface to a compiled expression.
  *
  * @author tstack
  */
-public interface SnapLogicExpression {
+public interface SnapLogicExpression extends Serializable{
     /**
      * Evaluate the expression with the given document, variable scopes, and value handler.
      *
